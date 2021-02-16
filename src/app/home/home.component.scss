@@ -1,0 +1,28 @@
+.main-container {
+    margin: auto;
+    width: 25%;
+    margin-top: 2rem;
+    
+    .result{
+        font-size: 3rem;
+        text-align: right;
+        margin-bottom: 1rem;
+        border: 0.1rem solid lightslategrey;
+        +div {
+            >div {
+                >div {
+                    text-align: center;
+                    font-size: 3rem;
+    
+    
+                    >button {
+                        width: 100%;
+                        font-size: 3rem;
+                        border: 0.1rem solid cornflowerblue;
+                    }
+                    padding: 0;
+                }
+            }
+        }
+    }
+}
