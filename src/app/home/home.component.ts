@@ -73,13 +73,16 @@ export class HomeComponent implements OnInit {
   }
 
   calculate(expressionStack) {
-    let num1 = 0, sign = "+";
+    let num1 = 0,i = 0;
+    let sign = "+";
+    
     this.results = "";
     for (let i = 0; i < expressionStack.length; i++) {
       let n = expressionStack[i];
       if (!isNaN(parseFloat(n)))
         num1 = parseFloat(n);
       if (isNaN(parseFloat(n)) || (i == this.expressionStack.length - 1)) {
+      
         if (sign == "+") 
           this.calcStack.push(num1);
         else if (sign == "-")
@@ -88,11 +91,13 @@ export class HomeComponent implements OnInit {
           this.calcStack.push((parseFloat(this.calcStack.pop()) / num1));
         else if (sign == "X")
           this.calcStack.push(num1 * (parseFloat(this.calcStack.pop())));
-        num1 = 0;
-        sign = n;
+
+          num1 = 0;
+          sign = n;
       }
     }
-    this.postEvaluation();
+
+    this.postExpressionEvalution()
   }
 
   updateLocalStorage() {
@@ -111,22 +116,25 @@ export class HomeComponent implements OnInit {
     
     let temp = this.results.join(",");
     if (temp[0] == ",") {
-      temp = temp.splice(1, temp.length - 1);
+      temp = temp.substring(1, temp.length - 1);
     }
     this.localStorageService.set('results', temp);
     this.currentExpression = "";
   }
 
-  postEvaluation() {
+
+  postExpressionEvalution() {
     this.consolidate = this.calcStack.reduce(function (a, b) {
       return a + b;
     }, 0);
     this.calcStack = [];
     this.expressionStack = [];
-    this.currentExpression += " = " + this.consolidate;    
+    this.currentExpression += " = " + this.consolidate;
+    
     this.updateLocalStorage();
   }
-  
+
+
   closeAlert() {
     this.showAlert = false;
     this.expressionStack = [];
