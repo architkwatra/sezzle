@@ -48,25 +48,23 @@ export class HomeComponent implements OnInit {
       } else if (value == "C") {
           this.reset();
       } else if (value === "=") {
-          if (this.num) {
+          if (this.expressionStack.length > 1 && this.num) {     
             this.expressionStack.push(this.num);
-            this.num = "";
           }
           if (this.checkExpressionStack()) {
-            this.calculate(this.expressionStack); 
+            this.calculate(this.expressionStack);
             this.reset(false, this.consolidate);
-          } 
+          }  
           return;
       } else {
         if ((value == "." && !isNaN(parseFloat(this.num[this.num.length - 1])) || !isNaN(parseFloat(value)))) 
-          this.num += value;
+          this.num += value; 
       }
-      this.consolidate = this.expressionStack.join(" ") ;
-      this.consolidate +=  ((!isNaN(parseFloat(this.consolidate[this.consolidate.length-1])) && (!isNaN(parseFloat(this.num)))) ? "": " " ) + this.num;
+      this.consolidate = this.expressionStack.join(" ") + " " + this.num;
       this.currentExpression = this.consolidate;
     } else {
       this.reset(true);
-    }
+    } 
   }
 
   reset(showAlert: boolean = false, consolidate = "") {
