@@ -38,40 +38,46 @@ export class HomeComponent implements OnInit {
   }
 
   handleClick(value: string) {
-    if (this.expressionStack.length + this.num.length < this.characterLimit || value == "C") {
-      if (this.shouldSetCalc) {
-        this.expressionStack = [];
-        this.consolidate = "";
-        this.shouldSetCalc = false;
-      }
-
+    if (this.expressionStack.join("").length + this.num.length < this.characterLimit || value == "C") {
       if ("+-X/".indexOf(value) > -1) {
         if ((this.expressionStack && !isNaN(parseFloat(this.expressionStack[this.expressionStack.length - 1])) || this.num)) {
           this.expressionStack.push(this.num);
-          this.num = "";
           this.expressionStack.push(value);
+          this.num = "";
         }       
       } else if (value == "C") {
-          this.expressionStack = [];
-          this.showAlert = false;
-          this.num = "";
+          this.reset();
       } else if (value === "=") {
-          if (this.num)  this.expressionStack.push(this.num);
-            this.num = ""
-            this.shouldSetCalc = true;
-            this.calculate(this.expressionStack);
-            return;
+          if (this.num) {
+            this.expressionStack.push(this.num);
+            this.num = "";
+          }
+          if (this.checkExpressionStack()) {
+            this.calculate(this.expressionStack); 
+            this.reset(false, this.consolidate);
+          } 
+          return;
       } else {
         if ((value == "." && !isNaN(parseFloat(this.num[this.num.length - 1])) || !isNaN(parseFloat(value)))) 
           this.num += value;
       }
-      this.consolidate = this.expressionStack.join(" ") + " " + this.num;
+      this.consolidate = this.expressionStack.join(" ") ;
+      this.consolidate +=  ((!isNaN(parseFloat(this.consolidate[this.consolidate.length-1])) && (!isNaN(parseFloat(this.num)))) ? "": " " ) + this.num;
       this.currentExpression = this.consolidate;
     } else {
-      this.showAlert = true;
+      this.reset(true);
     }
   }
 
+  reset(showAlert: boolean = false, consolidate = "") {
+    this.expressionStack = [];
+    this.showAlert = showAlert;
+    this.num = "";
+    this.consolidate = consolidate;
+  }
+  checkExpressionStack() {
+    return this.expressionStack && this.expressionStack.length > 2 && !isNaN(this.expressionStack[this.expressionStack.length-1])
+  }
   calculate(expressionStack) {
     let num1 = 0,i = 0;
     let sign = "+";
@@ -96,14 +102,26 @@ export class HomeComponent implements OnInit {
           sign = n;
       }
     }
-
     this.postExpressionEvalution()
+  }
+  
+  postExpressionEvalution() {
+    this.consolidate = this.calcStack.reduce(function (a, b) {
+      return a + b;
+    }, 0);
+    this.calcStack = [];
+    this.expressionStack = [];
+    this.currentExpression += " = " + this.consolidate;
+    
+    this.updateLocalStorage();
   }
 
   updateLocalStorage() {
 
     if (this.checkLocalStorage()) {
       this.results = this.localStorageService.get('results').split(",");
+    } else {
+      this.results = [];
     }
     
     if (this.results.length == this.limit && this.currentExpression != "") {
@@ -116,33 +134,17 @@ export class HomeComponent implements OnInit {
     
     let temp = this.results.join(",");
     if (temp[0] == ",") {
-      temp = temp.substring(1, temp.length - 1);
+      temp = temp.substring(1, temp.length);
     }
     this.localStorageService.set('results', temp);
     this.currentExpression = "";
   }
 
-
-  postExpressionEvalution() {
-    this.consolidate = this.calcStack.reduce(function (a, b) {
-      return a + b;
-    }, 0);
-    this.calcStack = [];
-    this.expressionStack = [];
-    this.currentExpression += " = " + this.consolidate;
-    
-    this.updateLocalStorage();
-  }
-
-
   closeAlert() {
     this.showAlert = false;
-    this.expressionStack = [];
-    this.showAlert = false;
-    this.num = "0";
   }
   checkLocalStorage() {
-    if (this.localStorageService.get('results') != null && this.localStorageService.get('results') != undefined)
+    if (this.localStorageService.get('results') != null && this.localStorageService.get('results') != undefined && this.localStorageService.get('results') != '')
       return true;
     return false;
   }
