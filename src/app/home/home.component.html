@@ -1,6 +1,6 @@
 <div class="main-container container">
     <div class="alert alert-danger container" role="alert" *ngIf="showAlert">
-        You have reached the character limit. Click on "X" or "C" to clear
+        You have reached the character limit. Click on "x" or "C" to clear
         <button (click)="closeAlert()" type="button" class="close" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
         </button>
@@ -8,8 +8,8 @@
     <div class="container result">{{ consolidate }}</div>
     <div class="container">
         <div class="row" *ngFor="let row of content; let i = index">
-            <div class="col-md-3" *ngFor="let value of row; let j = index"> 
-                <button type="button" class="btn btn-light" (click) = "handleClick(value)">{{ value }}</button>
+            <div class="col-3" *ngFor="let value of row; let j = index"> 
+                <button type="button" class="btn btn-light" (click) = "handleClick(value)" [disabled]="value == '*' || value == '#'">{{ value }}</button>
             </div>
         </div>
     </div>
