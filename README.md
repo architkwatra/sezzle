@@ -7,7 +7,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ### Steps to run the Application:
 
   - clone the project repo
-  - Install Angular cli
+  - Install node and npm
+  - Install Angular cli using the command "npm install -g @angular/cli"
   - run "npm install" in the project folder
   - Run `ng serve` for a dev server. 
   - Navigate to `http://localhost:4200/`. 
